@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Exception;
 
 use Convert::Base32 qw( encode_base32 decode_base32 );
 
@@ -36,10 +35,14 @@ my @tests = (
 
 plan tests => 2*@tests + 2*512;
 
+sub   dies_ok (&;$) { eval { shift->(); &fail } or &pass }
+sub  lives_ok (&;$) { eval { shift->(); &pass } or &fail }
+sub lives_and (&;$) { eval { shift->(@_) } or &fail }
+
 for (@tests) {
     my ($e, $dlen) = @$_;
     if ($dlen =~ /^[0-9]+\z/) {
-        lives_and { is length(decode_base32($e)), $dlen } "$e (ok)";
+        lives_and { is length(decode_base32($e)), $dlen, shift } "$e (ok)";
     } else {
         dies_ok { decode_base32($e) } "$e ($dlen)";
     }
@@ -49,7 +52,7 @@ for (@tests) {
     my ($e, $dlen) = @$_;
     $e = "aaaaaaaa$e";
     if ($dlen =~ /^[0-9]+\z/) {
-	lives_and { is length(decode_base32($e)), 5+$dlen } "$e (ok)";
+	lives_and { is length(decode_base32($e)), 5+$dlen, shift } "$e (ok)";
     } else {
 	dies_ok { decode_base32($e) } "$e ($dlen)";
     }

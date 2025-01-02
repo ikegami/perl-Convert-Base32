@@ -5,7 +5,6 @@ use ExtUtils::MakeMaker qw( WriteMakefile );
 
 my %test_requires = (
     'Test::More'      => 0,  # For testing.
-    'Test::Exception' => 0,  # For testing.
 );
 
 WriteMakefile(
